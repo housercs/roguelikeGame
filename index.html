@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Roguelike射击游戏</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 48px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="gameOver">游戏结束!</div>
+    <div id="upgradeModal" style="display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); background:#333; padding:20px; border:2px solid #fff; color:#fff;">
+        <h2>选择一个升级</h2>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button id="upgradeBtn1" style="padding:10px;">占位按钮1</button>
+            <button id="upgradeBtn2" style="padding:10px;">占位按钮2</button>
+            <button id="upgradeBtn3" style="padding:10px;">占位按钮3</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
