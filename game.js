@@ -366,6 +366,9 @@ let camera = {
     y: 0
 };
 
+// 用于记录虚拟摇杆触摸时的位置
+let joystickData = { active: false, startX: 0, startY: 0, currentX: 0, currentY: 0 };
+
 // 监听键盘事件
 window.addEventListener('keydown', e => keys[e.key] = true);
 window.addEventListener('keyup', e => keys[e.key] = false);
@@ -671,4 +674,101 @@ function spawnMonsters(count) {
 }
 
 // 设置初始等级的怪物生成速度（或者在此之前先生成若干怪物）
-updateMonsterSpawnInterval(); 
+updateMonsterSpawnInterval();
+
+////////////////////////////////////////////////////////////////////////
+// 新增：监听触摸事件，控制虚拟摇杆
+////////////////////////////////////////////////////////////////////////
+const joystickOuter = document.getElementById('joystickOuter');
+const joystickInner = document.getElementById('joystickInner');
+
+joystickOuter.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    const touch = e.targetTouches[0];
+    // 记录初始触摸位置
+    joystickData.active = true;
+    joystickData.startX = touch.clientX;
+    joystickData.startY = touch.clientY;
+    joystickData.currentX = touch.clientX;
+    joystickData.currentY = touch.clientY;
+    updateJoystickVisual();
+});
+
+joystickOuter.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!joystickData.active) return;
+    const touch = e.targetTouches[0];
+    // 更新当前触摸位置
+    joystickData.currentX = touch.clientX;
+    joystickData.currentY = touch.clientY;
+    updateJoystickVisual();
+});
+
+joystickOuter.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    // 复位摇杆位置
+    joystickData.active = false;
+    joystickInner.style.left = '40px';
+    joystickInner.style.top = '40px';
+    // 松开后取消所有方向键
+    keys.ArrowUp = false;
+    keys.ArrowDown = false;
+    keys.ArrowLeft = false;
+    keys.ArrowRight = false;
+});
+
+/**
+ * 将摇杆偏移转换为 ArrowUp/Down/Left/Right
+ * 并更新摇杆视觉位置
+ */
+function updateJoystickVisual() {
+    const outerRect = joystickOuter.getBoundingClientRect();
+    const centerX = outerRect.left + outerRect.width / 2;
+    const centerY = outerRect.top + outerRect.height / 2;
+
+    // 计算当前触摸与中心点的偏移
+    let dx = joystickData.currentX - centerX;
+    let dy = joystickData.currentY - centerY;
+
+    // 摇杆半径
+    const radius = outerRect.width / 2; // 60px
+
+    // 检测距离是否超过外圈半径，若超过则限幅
+    const distance = Math.sqrt(dx*dx + dy*dy);
+    if (distance > radius) {
+        const angle = Math.atan2(dy, dx);
+        dx = Math.cos(angle) * radius;
+        dy = Math.sin(angle) * radius;
+    }
+
+    // 设置内圈位置，使其与手指保持一致或到外圈边缘
+    const innerX = 40 + dx; // 初始 left=40
+    const innerY = 40 + dy; // 初始 top=40
+    joystickInner.style.left = innerX + 'px';
+    joystickInner.style.top = innerY + 'px';
+
+    // 根据 dx, dy 计算方向并设置 keys
+    const deadZone = 10; // 若移动较小则视为不动
+    // 先全部 false
+    keys.ArrowUp = false;
+    keys.ArrowDown = false;
+    keys.ArrowLeft = false;
+    keys.ArrowRight = false;
+
+    // 若 dy < -deadZone => Up
+    if (dy < -deadZone) {
+        keys.ArrowUp = true;
+    }
+    // 若 dy > deadZone => Down
+    if (dy > deadZone) {
+        keys.ArrowDown = true;
+    }
+    // 若 dx < -deadZone => Left
+    if (dx < -deadZone) {
+        keys.ArrowLeft = true;
+    }
+    // 若 dx > deadZone => Right
+    if (dx > deadZone) {
+        keys.ArrowRight = true;
+    }
+} 

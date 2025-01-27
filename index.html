@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <title>Roguelike射击游戏</title>
     <style>
@@ -19,6 +20,37 @@
             font-size: 48px;
             color: red;
         }
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background: #fff;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 0 auto;
+            background-color: #fff;
+            touch-action: none;
+        }
+        #joystickOuter {
+            position: absolute;
+            bottom: 60px;
+            left: 60px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+        #joystickInner {
+            position: absolute;
+            left: 40px;
+            top: 40px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.6);
+        }
     </style>
 </head>
 <body>
@@ -31,6 +63,9 @@
             <button id="upgradeBtn2" style="padding:10px;">占位按钮2</button>
             <button id="upgradeBtn3" style="padding:10px;">占位按钮3</button>
         </div>
+    </div>
+    <div id="joystickOuter">
+        <div id="joystickInner"></div>
     </div>
     <script src="game.js"></script>
 </body>
